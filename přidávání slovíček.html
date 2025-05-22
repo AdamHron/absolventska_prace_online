@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <title>Přidat slovíčko</title>
+</head>
+<body>
+  <h1>Přidat slovíčko</h1>
+  <form id="wordForm">
+    <label>Česky: <input type="text" id="cz" required /></label><br />
+    <label>Anglicky: <input type="text" id="en" required /></label><br />
+    <label>Výslovnost: <input type="text" id="vyslovnost" /></label><br />
+    <label>Třída: <input type="number" id="trida" /></label><br />
+    <label>Unit: <input type="number" id="unit" /></label><br />
+    <label>Subunit: <input type="text" id="subunit" /></label><br />
+    <button type="submit">Přidat</button>
+  </form>
+
+  <button onclick="exportToJS()">Exportuj lekce.js</button>
+
+  <script>
+    const STORAGE_KEY = "slovicka";
+
+    function loadWords() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    }
+
+    function saveWords(words) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(words));
+    }
+
+    document.getElementById("wordForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const word = {
+        cz: document.getElementById("cz").value.trim(),
+        en: document.getElementById("en").value.trim(),
+        en_vyslovnost: document.getElementById("vyslovnost").value.trim(),
+        trida: parseInt(document.getElementById("trida").value),
+        unit: parseInt(document.getElementById("unit").value),
+        subunit: document.getElementById("subunit").value.trim(),
+      };
+      const words = loadWords();
+      words.push(word);
+      saveWords(words);
+      alert("Slovíčko přidáno.");
+      this.reset();
+    });
+
+    function exportToJS() {
+      const words = loadWords();
+      const jsCode = `const words = ${JSON.stringify(words, null, 2)};`;
+      const blob = new Blob([jsCode], { type: "application/javascript" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "lekce.js";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+</body>
+</html>
