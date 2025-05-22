@@ -1,1 +1,0 @@
-# absolventska_prace_online
